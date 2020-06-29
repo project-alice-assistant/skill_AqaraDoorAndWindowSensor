@@ -1,10 +1,7 @@
-from typing import Dict, Union
-from core.base.model.AliceSkill import AliceSkill
+from typing import Dict, Optional, Union
 
-try:
-	from skills.Zigbee2Mqtt.model.ZigbeeDeviceHandler import ZigbeeDeviceHandler
-except:
-	pass
+from skills.Zigbee2Mqtt.model.ZigbeeDeviceHandler import ZigbeeDeviceHandler
+from core.base.model.AliceSkill import AliceSkill
 
 
 class AqaraDoorAndWindowSensor(AliceSkill):
@@ -15,7 +12,7 @@ class AqaraDoorAndWindowSensor(AliceSkill):
 
 	def __init__(self):
 		super().__init__()
-		self._handler = None
+		self._handler: Optional[ZigbeeDeviceHandler] = None
 		self._state = None
 		self._battery = None
 		self._linkQuality = None
@@ -23,18 +20,21 @@ class AqaraDoorAndWindowSensor(AliceSkill):
 
 	def onStart(self):
 		super().onStart()
-		self._handler = ZigbeeDeviceHandler(skillInstance=self.onDeviceMessage, modelId='lumi.sensor_magneet.aq2')
 
 
 	def onBooted(self) -> bool:
-		return self._handler.onBooted()
+		server = self.SkillManager.getSkillInstance('Zigbee2Mqtt')
+		if not server:
+			self.logWarning('Requiring Zigbee2Mqtt but it is not available')
+			self.SkillManager.deactivateSkill(self.name)
+			return False
+
+		self._handler = server.subscribe(deviceType='lumi.sensor_magnet.aq2', onMessageCallback=self.onDeviceMessage)
 
 
 	def onDeviceMessage(self, message: Union[str, Dict]):
 		if 'contact' in message:
 			self._state = message['contact']
-
-		print(f'my state is {self._state}')
 
 		if 'battery' in message:
 			self._battery = message['battery']
