@@ -29,7 +29,7 @@ class AqaraDoorAndWindowSensor(AliceSkill):
 			self.SkillManager.deactivateSkill(self.name)
 			return False
 
-		self._handler = server.subscribe(deviceType='lumi.sensor_magnet.aq2', onMessageCallback=self.onDeviceMessage)
+		self._handler = server.subscribe(deviceType='xiaomi_MCCGQ11LM', onMessageCallback=self.onDeviceMessage)
 
 
 	def onDeviceMessage(self, message: Union[str, Dict]):
