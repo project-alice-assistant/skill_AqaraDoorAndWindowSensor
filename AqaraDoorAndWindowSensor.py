@@ -1,7 +1,12 @@
 from typing import Dict, Optional, Union
 
-from skills.Zigbee2Mqtt.model.ZigbeeDeviceHandler import ZigbeeDeviceHandler
 from core.base.model.AliceSkill import AliceSkill
+
+try:
+	from skills.Zigbee2Mqtt.model.ZigbeeDeviceHandler import ZigbeeDeviceHandler
+except:
+	# Required skill is not installed
+	pass
 
 
 class AqaraDoorAndWindowSensor(AliceSkill):
@@ -12,7 +17,7 @@ class AqaraDoorAndWindowSensor(AliceSkill):
 
 	def __init__(self):
 		super().__init__()
-		self._handler: Optional[ZigbeeDeviceHandler] = None
+		self._handler = None
 		self._state = None
 		self._battery = None
 		self._linkQuality = None
